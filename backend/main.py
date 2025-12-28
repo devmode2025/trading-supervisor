@@ -37,6 +37,15 @@ class DRTRequest(BaseModel):
     high: float
     low: float
 
+class LRLRRequest(BaseModel):
+    order_flow_direction: str  # 'BULLISH' or 'BEARISH'
+    nearest_high_above: float
+    second_high_above: float
+    highest_above: float
+    nearest_low_below: float
+    second_low_below: float
+    lowest_below: float
+
 class AMDRequest(BaseModel):
     body_ratio: float
     wick_ratio: float
@@ -63,6 +72,14 @@ class ConfluenceRequest(BaseModel):
     entry_confluence: int
     amd_phase: str
     macro_timing: str = "neutral"
+
+class EntryValidatorRequest(BaseModel):
+    confluence_score: int
+    drt_location: str
+    order_block_present: bool
+    hrlr_confirmed: bool
+    lrlr_identified: bool
+    price_in_retracement_zone: bool
 
 class RiskRequest(BaseModel):
     account_size: float
@@ -131,6 +148,48 @@ async def calculate_drt(request: DRTRequest):
         },
         "range_width": range_width,
         "status": "calculated",
+        "timestamp": datetime.now()
+    }
+
+# ============================================================================
+# AGENT 1B: LRLR TARGET IDENTIFIER (HRLR/LRLR Integration)
+# ============================================================================
+
+@app.post("/agents/lrlr")
+async def identify_lrlr_targets(request: LRLRRequest):
+    """
+    Agent 1B: LRLR Target Identifier
+    Pre-identifies LRLR expansion targets and HRLR sweep levels
+    Based on order flow direction and previous price structure
+    """
+    if request.order_flow_direction == 'BULLISH':
+        # In bullish, LRLR = previous HIGHS (expansion targets)
+        # HRLR = previous LOWS (expected sweep for liquidity)
+        lrlr_tier_1 = request.nearest_high_above
+        lrlr_tier_2 = request.second_high_above
+        lrlr_tier_3 = request.highest_above
+        hrlr_expected_sweep = request.nearest_low_below
+
+    else:  # BEARISH
+        # In bearish, LRLR = previous LOWS (expansion targets)
+        # HRLR = previous HIGHS (expected sweep for liquidity)
+        lrlr_tier_1 = request.nearest_low_below
+        lrlr_tier_2 = request.second_low_below
+        lrlr_tier_3 = request.lowest_below
+        hrlr_expected_sweep = request.nearest_high_above
+
+    return {
+        "agent": "LRLR Target Identifier",
+        "order_flow": request.order_flow_direction,
+        "hrlr_expected_sweep_level": hrlr_expected_sweep,
+        "lrlr_tier_1_target": lrlr_tier_1,
+        "lrlr_tier_2_target": lrlr_tier_2,
+        "lrlr_tier_3_target": lrlr_tier_3,
+        "targets_identified": True,
+        "tier_1_distance": abs(lrlr_tier_1 - hrlr_expected_sweep),
+        "tier_2_distance": abs(lrlr_tier_2 - hrlr_expected_sweep),
+        "tier_3_distance": abs(lrlr_tier_3 - hrlr_expected_sweep),
+        "status": "identified",
         "timestamp": datetime.now()
     }
 
@@ -276,6 +335,63 @@ async def score_confluence(request: ConfluenceRequest):
         "recommendation": recommendation,
         "confidence": confidence,
         "max_score": 100,
+        "timestamp": datetime.now()
+    }
+
+# ============================================================================
+# AGENT 5B: ENTRY VALIDATOR WITH HRLR/LRLR (HRLR/LRLR Integration)
+# ============================================================================
+
+@app.post("/agents/entry-validator")
+async def validate_entry_with_hrlr_lrlr(request: EntryValidatorRequest):
+    """
+    Agent 5B: Entry Validator with HRLR/LRLR
+    Validates entry based on confluence score AND HRLR/LRLR requirements
+
+    HRLR/LRLR Requirements:
+    - HRLR must be confirmed (sweep detected and candle closed)
+    - LRLR targets must be identified (Tier 1, 2, 3)
+    - Price must be in retracement zone (not during HRLR sweep)
+    """
+
+    # HRLR/LRLR validation checks
+    hrlr_lrlr_checks = {
+        'hrlr_confirmed': request.hrlr_confirmed,
+        'lrlr_identified': request.lrlr_identified,
+        'price_in_retracement': request.price_in_retracement_zone
+    }
+
+    hrlr_lrlr_valid = all(hrlr_lrlr_checks.values())
+    checks_passed = sum(hrlr_lrlr_checks.values())
+
+    # Confluence validation
+    confluence_valid = request.confluence_score >= 60
+
+    # Combined decision: BOTH confluence AND HRLR/LRLR must be valid
+    entry_decision = 'GO' if (confluence_valid and hrlr_lrlr_valid) else 'NO-GO'
+
+    # Determine reason for decision
+    if not confluence_valid:
+        reason = f"Confluence score {request.confluence_score} below 60 threshold"
+    elif not hrlr_lrlr_valid:
+        failed_checks = [k for k, v in hrlr_lrlr_checks.items() if not v]
+        reason = f"HRLR/LRLR validation failed: {', '.join(failed_checks)}"
+    else:
+        reason = "All validations passed: Confluence ≥60 + HRLR confirmed + LRLR identified + Price in retracement"
+
+    return {
+        "agent": "Entry Validator (HRLR/LRLR Enhanced)",
+        "decision": entry_decision,
+        "confluence_score": request.confluence_score,
+        "confluence_valid": confluence_valid,
+        "hrlr_lrlr_valid": hrlr_lrlr_valid,
+        "hrlr_lrlr_checks": hrlr_lrlr_checks,
+        "checks_passed": checks_passed,
+        "checks_total": len(hrlr_lrlr_checks),
+        "reason": reason,
+        "drt_location": request.drt_location,
+        "order_block_present": request.order_block_present,
+        "status": "validated",
         "timestamp": datetime.now()
     }
 
