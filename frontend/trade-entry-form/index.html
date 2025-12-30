@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trade Entry Form v2.3 - Premium Edition</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="form-container">
+    <header class="form-header">
+      <h1 class="form-title">📈 Trade Entry Form</h1>
+      <p class="form-subtitle">v2.3 Premium Edition - Market Maker Model Integration</p>
+    </header>
+
+    <form id="tradeEntryForm" class="trade-form" novalidate>
+      
+      <!-- SECTION 1: Trade Identification -->
+      <section class="form-section" data-section="1">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="section-icon">📋</span>
+            Section 1: Trade Identification
+          </h2>
+          <p class="section-subtitle">Basic trade information - Required fields</p>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-field" style="--field-index: 1">
+            <label class="form-label" for="Date">
+              Trade Date <span class="form-required">*</span>
+            </label>
+            <input type="date" id="Date" name="Date" class="form-input" required>
+          </div>
+
+          <div class="form-field" style="--field-index: 2">
+            <label class="form-label" for="Trade_ID">Trade ID</label>
+            <input type="text" id="Trade_ID" name="Trade_ID" class="form-input" placeholder="e.g., TRD-2025-001">
+          </div>
+
+          <div class="form-field" style="--field-index: 3">
+            <label class="form-label" for="Pattern_Type">
+              Setup Type <span class="form-required">*</span>
+            </label>
+            <select id="Pattern_Type" name="Pattern_Type" class="form-select" required>
+              <option value="">Select Setup Type...</option>
+              <option value="Bearish Breakdown" data-color="bearish">Bearish Breakdown</option>
+              <option value="Bullish Breakout" data-color="bullish">Bullish Breakout</option>
+              <option value="Bearish Trap Spring" data-color="bearish">Bearish Trap Spring</option>
+              <option value="Bullish Trap Spring" data-color="bullish">Bullish Trap Spring</option>
+              <option value="Value Area Retracement" data-color="neutral">Value Area Retracement</option>
+              <option value="Divergence Detection" data-color="caution">Divergence Detection</option>
+              <option value="Other" data-color="neutral">Other</option>
+            </select>
+          </div>
+
+          <div class="form-field" style="--field-index: 4">
+            <label class="form-label" for="Win_Loss">Win/Loss</label>
+            <select id="Win_Loss" name="Win_Loss" class="form-select">
+              <option value="">Select Result...</option>
+              <option value="W" data-color="bullish">Win</option>
+              <option value="L" data-color="bearish">Loss</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: Market Maker Analysis (CRITICAL) -->
+      <section class="form-section critical" data-section="2">
+        <div class="section-header">
+          <h2 class="section-title critical">
+            <span class="section-icon">⭐</span>
+            Section 2: Market Maker Analysis
+          </h2>
+          <p class="section-subtitle critical">Smart Money Model - Critical fields for trade validation</p>
+        </div>
+        
+        <!-- Sub A: Climax Identification -->
+        <div class="form-subsection">
+          <h3 class="subsection-title">A. Climax Identification</h3>
+          <div class="form-grid">
+            <div class="form-field" style="--field-index: 4">
+              <label class="form-label" for="MMM_Climax_Type">
+                Climax Type <span class="form-required">*</span>
+              </label>
+              <select id="MMM_Climax_Type" name="MMM_Climax_Type" class="form-select" required>
+                <option value="">Select Climax Type...</option>
+                <option value="Selling_Climax_SC" data-color="bearish">Selling Climax (SC)</option>
+                <option value="Buying_Climax_BC" data-color="bullish">Buying Climax (BC)</option>
+                <option value="Both_Present" data-color="caution">Both Present</option>
+                <option value="None_Visible" data-color="neutral">None Visible</option>
+              </select>
+            </div>
+            
+            <div class="form-field" style="--field-index: 5">
+              <label class="form-label" for="MMM_Climax_Price">Climax Price</label>
+              <input type="number" id="MMM_Climax_Price" name="MMM_Climax_Price" 
+                     class="form-input" step="0.01" placeholder="e.g., 4525.50">
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub B: Secondary Test -->
+        <div class="form-subsection">
+          <h3 class="subsection-title">B. Secondary Test</h3>
+          <div class="form-grid">
+            <div class="form-field checkbox-field" style="--field-index: 6">
+              <label class="checkbox-label">
+                <input type="checkbox" id="MMM_SecondaryTest_Confirmed" name="MMM_SecondaryTest_Confirmed">
+                <span class="checkbox-text">Secondary Test Confirmed</span>
+              </label>
+            </div>
+            
+            <div class="form-field conditional" id="field_MMM_SecondaryTest_Price" style="--field-index: 7">
+              <label class="form-label" for="MMM_SecondaryTest_Price">Secondary Test Price</label>
+              <input type="number" id="MMM_SecondaryTest_Price" name="MMM_SecondaryTest_Price" 
+                     class="form-input" step="0.01" placeholder="e.g., 4520.25">
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub C: Range Formation -->
+        <div class="form-subsection">
+          <h3 class="subsection-title">C. Range Formation</h3>
+          <div class="form-grid">
+            <div class="form-field" style="--field-index: 8">
+              <label class="form-label" for="MMM_Range_Type">
+                Range Type <span class="form-required">*</span>
+              </label>
+              <select id="MMM_Range_Type" name="MMM_Range_Type" class="form-select" required>
+                <option value="">Select Range Type...</option>
+                <option value="Accumulation_HigherLows" data-color="bullish">Accumulation (Higher Lows)</option>
+                <option value="Distribution_LowerHighs" data-color="bearish">Distribution (Lower Highs)</option>
+                <option value="Both_Patterns_Present" data-color="caution">Both Patterns Present</option>
+                <option value="No_Clear_Range" data-color="neutral">No Clear Range</option>
+                <option value="Not_Yet_Formed" data-color="neutral">Not Yet Formed</option>
+              </select>
+            </div>
+            
+            <div class="form-field conditional" id="field_MMM_RangeHigherLows_Count" style="--field-index: 9">
+              <label class="form-label" for="MMM_RangeHigherLows_Count">Higher Lows Count</label>
+              <input type="number" id="MMM_RangeHigherLows_Count" name="MMM_RangeHigherLows_Count" 
+                     class="form-input" min="0" max="10" placeholder="0-10">
+            </div>
+          </div>
+        </div>
+        <!-- Sub D: Break of Structure -->
+        <div class="form-subsection">
+          <h3 class="subsection-title">D. Break of Structure</h3>
+          <div class="form-grid">
+            <div class="form-field" style="--field-index: 10">
+              <label class="form-label" for="MMM_BreakOfStructure_Status">
+                Break of Structure Status <span class="form-required">*</span>
+              </label>
+              <select id="MMM_BreakOfStructure_Status" name="MMM_BreakOfStructure_Status" class="form-select" required>
+                <option value="">Select Status...</option>
+                <option value="SOS_Confirmed_SignOfStrength" data-color="bullish">SOS Confirmed (Sign of Strength)</option>
+                <option value="SOW_Confirmed_SignOfWeakness" data-color="bearish">SOW Confirmed (Sign of Weakness)</option>
+                <option value="Both_Breaks_Visible" data-color="caution">Both Breaks Visible</option>
+                <option value="Break_InProgress" data-color="caution">Break In Progress</option>
+                <option value="Break_Likely_Today" data-color="caution">Break Likely Today</option>
+                <option value="No_Break_Yet" data-color="neutral">No Break Yet</option>
+                <option value="Range_Still_Contained" data-color="neutral">Range Still Contained</option>
+              </select>
+            </div>
+
+            <div class="form-field conditional" id="field_MMM_BreakLevel_Price" style="--field-index: 11">
+              <label class="form-label" for="MMM_BreakLevel_Price">Break Level Price</label>
+              <input type="number" id="MMM_BreakLevel_Price" name="MMM_BreakLevel_Price"
+                     class="form-input" step="0.01" placeholder="e.g., 4530.00">
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub E: CRITICAL PHASE DECISION -->
+        <div class="form-subsection critical-decision">
+          <h3 class="subsection-title critical">E. ⭐ CRITICAL PHASE DECISION ⭐</h3>
+          <p class="critical-help">These two fields are the most important - they determine trade direction and confidence</p>
+
+          <div class="form-grid">
+            <div class="form-field critical-field" style="--field-index: 12">
+              <label class="form-label critical" for="MMM_Phase_Identified">
+                ⭐ MMM Phase Identified <span class="form-required">*</span>
+              </label>
+              <select id="MMM_Phase_Identified" name="MMM_Phase_Identified" class="form-select critical" required>
+                <option value="">Select Phase...</option>
+                <option value="Accumulation" data-color="bullish">🟢 Accumulation (Bullish)</option>
+                <option value="Markup" data-color="bullish">🟢 Markup (Bullish)</option>
+                <option value="Distribution" data-color="bearish">🔴 Distribution (Bearish)</option>
+                <option value="Markdown" data-color="bearish">🔴 Markdown (Bearish)</option>
+                <option value="Uncertain_Conflicting" data-color="caution">🟡 Uncertain/Conflicting</option>
+                <option value="Not_Clearly_Defined" data-color="neutral">⚪ Not Clearly Defined</option>
+              </select>
+              <p class="form-help-text critical">Primary market phase - guides trade direction</p>
+            </div>
+
+            <div class="form-field critical-field" style="--field-index: 13">
+              <label class="form-label critical" for="MMM_MTF_Alignment_Status">
+                ⭐ MTF Alignment Status <span class="form-required">*</span>
+              </label>
+              <select id="MMM_MTF_Alignment_Status" name="MMM_MTF_Alignment_Status" class="form-select critical" required>
+                <option value="">Select Alignment...</option>
+                <option value="Strong_Aligned" data-color="bullish">🟢 Strong Aligned (+15 confidence)</option>
+                <option value="Moderate_Aligned" data-color="caution">🟡 Moderate Aligned (+5 confidence)</option>
+                <option value="Conflicting_Divergence" data-color="bearish">🔴 Conflicting/Divergence (-10 confidence)</option>
+                <option value="Unclear_Insufficient_Data" data-color="neutral">⚪ Unclear/Insufficient Data</option>
+              </select>
+              <p class="form-help-text critical">Multi-timeframe alignment - affects confidence adjustment</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: Pre-Market Structure & Tier Targets -->
+      <section class="form-section" data-section="3">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="section-icon">🎯</span>
+            Section 3: Pre-Market Structure
+          </h2>
+          <p class="section-subtitle">HRLR/LRLR levels and tier tracking</p>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field" style="--field-index: 14">
+            <label class="form-label" for="HRLR_Level">
+              HRLR Level <span class="form-required">*</span>
+            </label>
+            <input type="number" id="HRLR_Level" name="HRLR_Level"
+                   class="form-input" step="0.01" required placeholder="High Risk Low Reward sweep level">
+            <p class="form-help-text">Pre-identified liquidity sweep level</p>
+          </div>
+
+          <div class="form-field" style="--field-index: 15">
+            <label class="form-label" for="HRLR_Confirmed_Time">HRLR Confirmed Time</label>
+            <input type="time" id="HRLR_Confirmed_Time" name="HRLR_Confirmed_Time" class="form-input">
+            <p class="form-help-text">When was the HRLR level confirmed?</p>
+          </div>
+
+          <div class="form-field" style="--field-index: 16">
+            <label class="form-label" for="LRLR_Target_1">Tier 1 Target</label>
+            <input type="number" id="LRLR_Target_1" name="LRLR_Target_1"
+                   class="form-input" step="0.01" placeholder="First profit target (50%)">
+          </div>
+
+          <div class="form-field" style="--field-index: 17">
+            <label class="form-label" for="LRLR_Target_2">Tier 2 Target</label>
+            <input type="number" id="LRLR_Target_2" name="LRLR_Target_2"
+                   class="form-input" step="0.01" placeholder="Second profit target (30%)">
+          </div>
+
+          <div class="form-field" style="--field-index: 18">
+            <label class="form-label" for="LRLR_Target_3">Tier 3 Target</label>
+            <input type="number" id="LRLR_Target_3" name="LRLR_Target_3"
+                   class="form-input" step="0.01" placeholder="Third profit target (20%)">
+          </div>
+
+          <div class="form-field checkbox-field" style="--field-index: 19">
+            <label class="checkbox-label">
+              <input type="checkbox" id="Tier_1_Exited" name="Tier_1_Exited">
+              <span class="checkbox-text">Tier 1 Reached</span>
+            </label>
+          </div>
+
+          <div class="form-field checkbox-field" style="--field-index: 20">
+            <label class="checkbox-label">
+              <input type="checkbox" id="LRLR_Tier2_Reached" name="LRLR_Tier2_Reached">
+              <span class="checkbox-text">Tier 2 Reached</span>
+            </label>
+          </div>
+
+          <div class="form-field checkbox-field" style="--field-index: 21">
+            <label class="checkbox-label">
+              <input type="checkbox" id="LRLR_Tier3_Reached" name="LRLR_Tier3_Reached">
+              <span class="checkbox-text">Tier 3 Reached</span>
+            </label>
+          </div>
+
+          <div class="form-field" style="--field-index: 22">
+            <label class="form-label" for="TP_Tier1_Zone">TP Tier 1 Zone</label>
+            <textarea id="TP_Tier1_Zone" name="TP_Tier1_Zone" class="form-textarea"
+                      rows="2" placeholder="Tier 1 take profit zone notes"></textarea>
+          </div>
+
+          <div class="form-field" style="--field-index: 23">
+            <label class="form-label" for="TP_Tier2_Zone">TP Tier 2 Zone</label>
+            <textarea id="TP_Tier2_Zone" name="TP_Tier2_Zone" class="form-textarea"
+                      rows="2" placeholder="Tier 2 take profit zone notes"></textarea>
+          </div>
+
+          <div class="form-field" style="--field-index: 24">
+            <label class="form-label" for="TP_Tier3_Zone">TP Tier 3 Zone</label>
+            <textarea id="TP_Tier3_Zone" name="TP_Tier3_Zone" class="form-textarea"
+                      rows="2" placeholder="Tier 3 take profit zone notes"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: Confidence -->
+      <section class="form-section" data-section="4">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="section-icon">⚙️</span>
+            Section 4: Trade Confidence
+          </h2>
+          <p class="section-subtitle">Confidence and quality assessment</p>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field" style="--field-index: 25">
+            <label class="form-label" for="Layer3_Confidence_Score">
+              Entry Confidence (0-100) <span class="form-required">*</span>
+            </label>
+            <input type="number" id="Layer3_Confidence_Score" name="Layer3_Confidence_Score"
+                   class="form-input" min="0" max="100" required placeholder="0-100">
+            <p class="form-help-text">System confidence score for this entry</p>
+          </div>
+
+          <div class="form-field" style="--field-index: 26">
+            <label class="form-label" for="Pre_Trade_Confidence">
+              Pattern Quality (0-10)
+            </label>
+            <input type="number" id="Pre_Trade_Confidence" name="Pre_Trade_Confidence"
+                   class="form-input" min="0" max="10" placeholder="0-10">
+            <p class="form-help-text">How clean was the pattern setup?</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: Trade Execution -->
+      <section class="form-section" data-section="5">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="section-icon">💰</span>
+            Section 5: Trade Execution
+          </h2>
+          <p class="section-subtitle">Actual trade entry and exit details</p>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field" style="--field-index: 30">
+            <label class="form-label" for="Your_Actual_Entry_Time">Entry Time</label>
+            <input type="time" id="Your_Actual_Entry_Time" name="Your_Actual_Entry_Time" class="form-input">
+          </div>
+
+          <div class="form-field" style="--field-index: 31">
+            <label class="form-label" for="Your_Actual_Entry_Price">
+              Entry Price <span class="form-required">*</span>
+            </label>
+            <input type="number" id="Your_Actual_Entry_Price" name="Your_Actual_Entry_Price"
+                   class="form-input" step="0.01" required placeholder="Actual entry price">
+          </div>
+
+          <div class="form-field" style="--field-index: 32">
+            <label class="form-label" for="Entry_Reason">Entry Reason</label>
+            <select id="Entry_Reason" name="Entry_Reason" class="form-select">
+              <option value="">Select Reason...</option>
+              <option value="Phase 3 Confirmed" data-color="bullish">Phase 3 Confirmed</option>
+              <option value="Market Profile Break" data-color="bullish">Market Profile Break</option>
+              <option value="Volume Footprint Delta" data-color="neutral">Volume Footprint Delta</option>
+              <option value="CVD Re-acceleration" data-color="neutral">CVD Re-acceleration</option>
+              <option value="Other" data-color="neutral">Other</option>
+            </select>
+          </div>
+
+          <div class="form-field" style="--field-index: 33">
+            <label class="form-label" for="Entry_Timing">Entry Timing</label>
+            <select id="Entry_Timing" name="Entry_Timing" class="form-select">
+              <option value="">Select Timing...</option>
+              <option value="Phase III Confirmed" data-color="bullish">Phase III Confirmed</option>
+              <option value="Phase II-III Gap" data-color="caution">Phase II-III Gap</option>
+              <option value="Phase IV+" data-color="bearish">Phase IV+</option>
+              <option value="Uncertain" data-color="neutral">Uncertain</option>
+            </select>
+          </div>
+
+          <div class="form-field" style="--field-index: 34">
+            <label class="form-label" for="Your_Actual_Exit_Time">Exit Time</label>
+            <input type="time" id="Your_Actual_Exit_Time" name="Your_Actual_Exit_Time" class="form-input">
+          </div>
+
+          <div class="form-field" style="--field-index: 35">
+            <label class="form-label" for="Your_Actual_Exit_Price">
+              Exit Price <span class="form-required">*</span>
+            </label>
+            <input type="number" id="Your_Actual_Exit_Price" name="Your_Actual_Exit_Price"
+                   class="form-input" step="0.01" required placeholder="Actual exit price">
+          </div>
+
+          <div class="form-field" style="--field-index: 36">
+            <label class="form-label" for="Your_Exit_Reason">Exit Reason</label>
+            <select id="Your_Exit_Reason" name="Your_Exit_Reason" class="form-select">
+              <option value="">Select Reason...</option>
+              <option value="Target Hit" data-color="bullish">Target Hit</option>
+              <option value="Stop Hit" data-color="bearish">Stop Hit</option>
+              <option value="Hard Exit" data-color="caution">Hard Exit</option>
+              <option value="Other" data-color="neutral">Other</option>
+            </select>
+          </div>
+
+          <div class="form-field" style="--field-index: 37">
+            <label class="form-label" for="Exit_Type">Exit Type</label>
+            <select id="Exit_Type" name="Exit_Type" class="form-select">
+              <option value="">Select Type...</option>
+              <option value="Limit Filled" data-color="bullish">Limit Filled</option>
+              <option value="Market Order" data-color="neutral">Market Order</option>
+              <option value="Hard Exit" data-color="caution">Hard Exit</option>
+            </select>
+          </div>
+
+          <div class="form-field" style="--field-index: 38">
+            <label class="form-label" for="Exit_Tier_Executed">Exit Tier Executed</label>
+            <select id="Exit_Tier_Executed" name="Exit_Tier_Executed" class="form-select">
+              <option value="">Select Tier...</option>
+              <option value="Tier_1_Only" data-color="neutral">Tier 1 Only</option>
+              <option value="Tier_1_and_2" data-color="bullish">Tier 1 and 2</option>
+              <option value="All_Tiers_Full" data-color="bullish">All Tiers Full</option>
+              <option value="Runner_Extended" data-color="bullish">Runner Extended</option>
+              <option value="Stopped_Out" data-color="bearish">Stopped Out</option>
+            </select>
+          </div>
+
+          <div class="form-field" style="--field-index: 39">
+            <label class="form-label" for="Layer4_System_Stop_Loss">Stop Loss Price</label>
+            <input type="number" id="Layer4_System_Stop_Loss" name="Layer4_System_Stop_Loss"
+                   class="form-input" step="0.01" placeholder="Stop loss level">
+          </div>
+
+          <div class="form-field" style="--field-index: 40">
+            <label class="form-label" for="Target_Price">Target Price</label>
+            <input type="number" id="Target_Price" name="Target_Price"
+                   class="form-input" step="0.01" placeholder="Target price level">
+          </div>
+
+          <div class="form-field" style="--field-index: 41">
+            <label class="form-label" for="Max_Risk_Dollars">Max Risk ($)</label>
+            <input type="number" id="Max_Risk_Dollars" name="Max_Risk_Dollars"
+                   class="form-input" step="0.01" placeholder="Maximum risk in dollars">
+          </div>
+
+          <div class="form-field" style="--field-index: 42">
+            <label class="form-label" for="Risk_Dollars">Risk ($)</label>
+            <input type="number" id="Risk_Dollars" name="Risk_Dollars"
+                   class="form-input" step="0.01" placeholder="Actual risk in dollars">
+          </div>
+
+          <div class="form-field" style="--field-index: 43">
+            <label class="form-label" for="Stop_Distance_Points">Stop Distance (pts)</label>
+            <input type="number" id="Stop_Distance_Points" name="Stop_Distance_Points"
+                   class="form-input" step="0.01" placeholder="Points to stop">
+          </div>
+
+          <div class="form-field checkbox-field" style="--field-index: 44">
+            <label class="checkbox-label">
+              <input type="checkbox" id="Risk_Acceptable" name="Risk_Acceptable">
+              <span class="checkbox-text">Risk Acceptable</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: Trade Analysis -->
+      <section class="form-section" data-section="6">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="section-icon">📊</span>
+            Section 6: Trade Analysis
+          </h2>
+          <p class="section-subtitle">Post-trade review and learning</p>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field" style="--field-index: 38">
+            <label class="form-label" for="Pre_Trade_Confidence">Pre-Trade Confidence</label>
+            <input type="number" id="Pre_Trade_Confidence" name="Pre_Trade_Confidence"
+                   class="form-input" min="0" max="10" placeholder="0-10">
+            <p class="form-help-text">Your confidence before entering (0-10)</p>
+          </div>
+
+          <div class="form-field" style="--field-index: 39">
+            <label class="form-label" for="Pre_Trade_Emotional_State">Emotional State</label>
+            <select id="Pre_Trade_Emotional_State" name="Pre_Trade_Emotional_State" class="form-select">
+              <option value="">Select State...</option>
+              <option value="Confident" data-color="bullish">Confident</option>
+              <option value="Neutral" data-color="neutral">Neutral</option>
+              <option value="Anxious" data-color="caution">Anxious</option>
+              <option value="Excited" data-color="caution">Excited</option>
+              <option value="Focused" data-color="bullish">Focused</option>
+              <option value="Distracted" data-color="bearish">Distracted</option>
+              <option value="Tired" data-color="bearish">Tired</option>
+              <option value="Aggressive" data-color="caution">Aggressive</option>
+              <option value="Cautious" data-color="neutral">Cautious</option>
+              <option value="Other" data-color="neutral">Other</option>
+            </select>
+          </div>
+
+          <div class="form-field full-width" style="--field-index: 40">
+            <label class="form-label" for="Post_Trade_Notes">Hypothesis Statement</label>
+            <textarea id="Post_Trade_Notes" name="Post_Trade_Notes" class="form-textarea"
+                      placeholder="What was your trade hypothesis? What did you expect to happen?"></textarea>
+          </div>
+
+          <div class="form-field full-width" style="--field-index: 41">
+            <label class="form-label" for="Key_Insight">Key Insight</label>
+            <textarea id="Key_Insight" name="Key_Insight" class="form-textarea"
+                      placeholder="What key lesson or insight did you gain from this trade?"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Submit Section -->
+      <section class="form-section submit-section">
+        <div class="form-actions">
+          <button type="button" class="btn btn-sample" id="sampleDataBtn">
+            <span class="btn-icon">📝</span> Fill Sample Data
+          </button>
+          <button type="button" class="btn btn-secondary" id="resetBtn">
+            <span class="btn-icon">🔄</span> Reset Form
+          </button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <span class="btn-icon">✅</span> Submit Trade
+          </button>
+        </div>
+
+        <!-- CSV Import/Export -->
+        <div class="csv-actions">
+          <button type="button" class="btn btn-csv" id="exportCsvBtn">
+            <span class="btn-icon">📤</span> Export CSV
+          </button>
+          <label class="btn btn-csv btn-import" for="importCsvInput">
+            <span class="btn-icon">📥</span> Import CSV
+          </label>
+          <input type="file" id="importCsvInput" accept=".csv" class="hidden-input">
+        </div>
+
+        <p class="submit-note">* Required fields must be completed before submission</p>
+      </section>
+    </form>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="message-container hidden">
+      <div id="successMessage" class="message success hidden">
+        <span class="message-icon">✅</span>
+        <span class="message-text">Trade logged successfully!</span>
+      </div>
+      <div id="errorMessage" class="message error hidden">
+        <span class="message-icon">❌</span>
+        <span class="message-text">Please fill in all required fields.</span>
+      </div>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script src="form.js"></script>
+</body>
+</html>
+
