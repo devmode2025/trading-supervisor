@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Day Report</title>
+  <style>
+    :root {
+      --pre-market-color: #10b981;
+      --market-color: #f59e0b;
+      --post-market-color: #ef4444;
+      --bg-dark: #1f2937;
+      --bg-light: #f9fafb;
+      --text-dark: #333;
+      --text-light: #fff;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      line-height: 1.5;
+      padding: 20px;
+    }
+    
+    .container { max-width: 850px; margin: 0 auto; }
+    
+    /* Header */
+    .report-header {
+      background: var(--bg-dark);
+      color: var(--text-light);
+      padding: 20px 25px;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .report-header h1 { font-size: 1.5rem; }
+    .report-date { font-size: 1.1rem; opacity: 0.9; }
+    
+    /* Toolbar */
+    .toolbar {
+      background: #374151;
+      padding: 12px 25px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .toolbar button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: #3b82f6; color: white; }
+    .btn-secondary { background: #6b7280; color: white; }
+    .btn-success { background: #10b981; color: white; }
+    .toolbar button:hover { opacity: 0.9; transform: translateY(-1px); }
+    
+    /* Sections */
+    .section {
+      background: white;
+      margin-top: 0;
+      padding: 20px 25px;
+      border-left: 4px solid #ccc;
+    }
+    .section-premarket { border-left-color: var(--pre-market-color); }
+    .section-market { border-left-color: var(--market-color); }
+    .section-postmarket { border-left-color: var(--post-market-color); }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .section-icon { font-size: 1.3rem; }
+    .section-title { font-size: 1.1rem; font-weight: 600; }
+    .section-time { font-size: 0.85rem; color: #6b7280; margin-left: auto; }
+    
+    /* Form Grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 0.8rem; color: #6b7280; font-weight: 500; }
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    
+    /* Trade Cards */
+    .trade-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .trade-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .trade-number { font-weight: 600; color: var(--market-color); }
+    .trade-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status-win { background: #dcfce7; color: #16a34a; }
+    .status-loss { background: #fee2e2; color: #dc2626; }
+    
+    /* Summary Stats */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .stat-box {
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-value { font-size: 1.3rem; font-weight: 700; color: var(--bg-dark); }
+    .stat-label { font-size: 0.75rem; color: #6b7280; margin-top: 2px; }
+    .stat-positive { color: #16a34a; }
+    .stat-negative { color: #dc2626; }
+
+    /* Checkbox row */
+    .checkbox-row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .checkbox-item { display: flex; align-items: center; gap: 6px; }
+    .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; }
+    
+    /* Print styles */
+    @media print {
+      body { padding: 0; background: white; }
+      .toolbar { display: none; }
+      .container { max-width: 100%; }
+      .section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="report-header">
+      <div>
+        <h1>📊 Trading Day Report</h1>
+        <div class="report-date" id="reportDate">December 30, 2025 - Monday</div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 0.9rem;">E-mini S&P 500 (MNQ)</div>
+        <div style="font-size: 0.8rem; opacity: 0.8;">Session: 8:00 AM - 3:30 PM CT</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button class="btn-primary" onclick="importCSV()">📥 Import from Trade Form</button>
+      <button class="btn-success" onclick="window.print()">🖨️ Print / Save PDF</button>
+      <button class="btn-secondary" onclick="clearReport()">🔄 Clear Report</button>
+      <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCSVImport(event)">
+    </div>
+
+    <!-- PRE-MARKET SECTION -->
+    <div class="section section-premarket">
+      <div class="section-header">
+        <span class="section-icon">🌅</span>
+        <span class="section-title">PRE-MARKET ANALYSIS</span>
+        <span class="section-time">8:00 - 8:30 AM</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Climax Type</label>
+          <select id="climaxType">
+            <option value="">Select...</option>
+            <option value="SC">Selling Climax (SC)</option>
+            <option value="BC">Buying Climax (BC)</option>
+            <option value="Both">Both</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Range Type</label>
+          <select id="rangeType">
+            <option value="">Select...</option>
+            <option value="Accumulation">Accumulation</option>
+            <option value="Distribution">Distribution</option>
+            <option value="Re-Accumulation">Re-Accumulation</option>
+            <option value="Re-Distribution">Re-Distribution</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Break of Structure</label>
+          <select id="breakOfStructure">
+            <option value="">Select...</option>
+            <option value="SOS">Sign of Strength (SOS)</option>
+            <option value="SOW">Sign of Weakness (SOW)</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>MTF Alignment</label>
+          <select id="mtfAlignment">
+            <option value="">Select...</option>
+            <option value="Strong">Strong Aligned</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Conflicting">Conflicting</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top: 15px;">
+        <div class="form-group">
+          <label>HRLR Level</label>
+          <input type="number" id="hrlrLevel" step="0.01" placeholder="5850.00">
+        </div>
+        <div class="form-group">
+          <label>Tier 1 Target</label>
+          <input type="number" id="tier1Target" step="0.01" placeholder="5900.00">
+        </div>
+        <div class="form-group">
+          <label>Tier 2 Target</label>
+          <input type="number" id="tier2Target" step="0.01" placeholder="5950.00">
+        </div>
+        <div class="form-group">
+          <label>Tier 3 Target</label>
+          <input type="number" id="tier3Target" step="0.01" placeholder="6000.00">
+        </div>
+      </div>
+
+      <div class="checkbox-row" style="margin-top: 15px;">
+        <div class="checkbox-item">
+          <input type="checkbox" id="secondaryTestConfirmed">
+          <label for="secondaryTestConfirmed">Secondary Test Confirmed</label>
+        </div>
+        <div class="form-group" style="flex: 1; min-width: 150px;">
+          <label>Pre-Market Confidence (0-10)</label>
+          <input type="number" id="preMarketConfidence" min="0" max="10" placeholder="8">
+        </div>
+      </div>
+    </div>
+
+    <!-- MARKET SECTION -->
+    <div class="section section-market">
+      <div class="section-header">
+        <span class="section-icon">📈</span>
+        <span class="section-title">MARKET EXECUTION</span>
+        <span class="section-time">9:45 AM - 3:30 PM</span>
+      </div>
+
+      <!-- Trade 1 -->
+      <div class="trade-card" id="trade1Card">
+        <div class="trade-header">
+          <span class="trade-number">TRADE #1</span>
+          <span class="trade-status" id="trade1Status">—</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Entry Time</label>
+            <input type="time" id="trade1EntryTime">
+          </div>
+          <div class="form-group">
+            <label>Entry Price</label>
+            <input type="number" id="trade1EntryPrice" step="0.01" placeholder="5895.50" onchange="calculateTrade(1)">
+          </div>
+          <div class="form-group">
+            <label>Exit Time</label>
+            <input type="time" id="trade1ExitTime">
+          </div>
+          <div class="form-group">
+            <label>Exit Price</label>
+            <input type="number" id="trade1ExitPrice" step="0.01" placeholder="5925.00" onchange="calculateTrade(1)">
+          </div>
+        </div>
+        <div class="checkbox-row" style="margin-top: 10px;">
+          <div class="checkbox-item">
+            <input type="checkbox" id="trade1Tier1Hit" onchange="calculateTrade(1)">
+            <label>Tier 1 Hit</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="trade1Tier2Hit" onchange="calculateTrade(1)">
+            <label>Tier 2 Hit</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="trade1Tier3Hit" onchange="calculateTrade(1)">
+            <label>Tier 3 Hit</label>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>P&L Points</label>
+            <input type="text" id="trade1PnL" readonly style="background: #f1f5f9;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Trade 2 -->
+      <div class="trade-card" id="trade2Card">
+        <div class="trade-header">
+          <span class="trade-number">TRADE #2</span>
+          <span class="trade-status" id="trade2Status">—</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Entry Time</label>
+            <input type="time" id="trade2EntryTime">
+          </div>
+          <div class="form-group">
+            <label>Entry Price</label>
+            <input type="number" id="trade2EntryPrice" step="0.01" placeholder="5895.50" onchange="calculateTrade(2)">
+          </div>
+          <div class="form-group">
+            <label>Exit Time</label>
+            <input type="time" id="trade2ExitTime">
+          </div>
+          <div class="form-group">
+            <label>Exit Price</label>
+            <input type="number" id="trade2ExitPrice" step="0.01" placeholder="5925.00" onchange="calculateTrade(2)">
+          </div>
+        </div>
+        <div class="checkbox-row" style="margin-top: 10px;">
+          <div class="checkbox-item">
+            <input type="checkbox" id="trade2Tier1Hit" onchange="calculateTrade(2)">
+            <label>Tier 1 Hit</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="trade2Tier2Hit" onchange="calculateTrade(2)">
+            <label>Tier 2 Hit</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="trade2Tier3Hit" onchange="calculateTrade(2)">
+            <label>Tier 3 Hit</label>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>P&L Points</label>
+            <input type="text" id="trade2PnL" readonly style="background: #f1f5f9;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily Summary -->
+      <div class="summary-grid">
+        <div class="stat-box">
+          <div class="stat-value" id="totalTrades">0</div>
+          <div class="stat-label">Total Trades</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="winRate">0%</div>
+          <div class="stat-label">Win Rate</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="totalPnLPoints">0</div>
+          <div class="stat-label">Total P&L (Points)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="totalPnLDollars">$0</div>
+          <div class="stat-label">Total P&L ($)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="tierHitRate">0%</div>
+          <div class="stat-label">Tier Hit Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST-MARKET SECTION -->
+    <div class="section section-postmarket" style="border-radius: 0 0 10px 10px;">
+      <div class="section-header">
+        <span class="section-icon">🌆</span>
+        <span class="section-title">POST-MARKET ANALYSIS</span>
+        <span class="section-time">After 3:30 PM</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>What Worked Well</label>
+          <textarea id="whatWorkedWell" placeholder="List things that went right today..."></textarea>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Areas for Improvement</label>
+          <textarea id="areasForImprovement" placeholder="List things to work on..."></textarea>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Key Lessons Learned</label>
+          <textarea id="lessonsLearned" placeholder="Important insights from today..."></textarea>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Plan for Tomorrow</label>
+          <textarea id="planForTomorrow" placeholder="Focus areas and targets for next session..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize date
+    function initializeDate() {
+      const today = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('reportDate').textContent = today.toLocaleDateString('en-US', options);
+    }
+
+    // Calculate trade P&L
+    function calculateTrade(tradeNum) {
+      const entryPrice = parseFloat(document.getElementById(`trade${tradeNum}EntryPrice`).value) || 0;
+      const exitPrice = parseFloat(document.getElementById(`trade${tradeNum}ExitPrice`).value) || 0;
+      const pnl = exitPrice - entryPrice;
+
+      const pnlField = document.getElementById(`trade${tradeNum}PnL`);
+      const statusField = document.getElementById(`trade${tradeNum}Status`);
+
+      if (entryPrice && exitPrice) {
+        pnlField.value = pnl.toFixed(2);
+        if (pnl > 0) {
+          statusField.textContent = 'WIN';
+          statusField.className = 'trade-status status-win';
+        } else if (pnl < 0) {
+          statusField.textContent = 'LOSS';
+          statusField.className = 'trade-status status-loss';
+        } else {
+          statusField.textContent = 'BREAK-EVEN';
+          statusField.className = 'trade-status';
+        }
+      } else {
+        pnlField.value = '';
+        statusField.textContent = '—';
+        statusField.className = 'trade-status';
+      }
+
+      updateDailySummary();
+    }
+
+    // Update daily summary
+    function updateDailySummary() {
+      let totalTrades = 0;
+      let winningTrades = 0;
+      let totalPnL = 0;
+      let totalTierHits = 0;
+      let totalTiersAttempted = 0;
+
+      for (let i = 1; i <= 2; i++) {
+        const entry = parseFloat(document.getElementById(`trade${i}EntryPrice`).value);
+        const exit = parseFloat(document.getElementById(`trade${i}ExitPrice`).value);
+
+        if (entry && exit) {
+          totalTrades++;
+          const pnl = exit - entry;
+          totalPnL += pnl;
+          if (pnl > 0) winningTrades++;
+
+          totalTiersAttempted += 3;
+          if (document.getElementById(`trade${i}Tier1Hit`).checked) totalTierHits++;
+          if (document.getElementById(`trade${i}Tier2Hit`).checked) totalTierHits++;
+          if (document.getElementById(`trade${i}Tier3Hit`).checked) totalTierHits++;
+        }
+      }
+
+      document.getElementById('totalTrades').textContent = totalTrades;
+      document.getElementById('winRate').textContent = totalTrades ? Math.round((winningTrades / totalTrades) * 100) + '%' : '0%';
+
+      const pnlPointsEl = document.getElementById('totalPnLPoints');
+      pnlPointsEl.textContent = totalPnL.toFixed(2);
+      pnlPointsEl.className = 'stat-value ' + (totalPnL > 0 ? 'stat-positive' : totalPnL < 0 ? 'stat-negative' : '');
+
+      const pnlDollarsEl = document.getElementById('totalPnLDollars');
+      const dollars = totalPnL * 25;
+      pnlDollarsEl.textContent = '$' + dollars.toFixed(0);
+      pnlDollarsEl.className = 'stat-value ' + (dollars > 0 ? 'stat-positive' : dollars < 0 ? 'stat-negative' : '');
+
+      document.getElementById('tierHitRate').textContent = totalTiersAttempted ? Math.round((totalTierHits / totalTiersAttempted) * 100) + '%' : '0%';
+    }
+
+    // Import CSV
+    function importCSV() {
+      document.getElementById('csvFileInput').click();
+    }
+
+    function handleCSVImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split('\n');
+        if (lines.length < 2) return;
+
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        const values = lines[1].split(',').map(v => v.trim().replace(/"/g, ''));
+
+        const data = {};
+        headers.forEach((h, i) => { data[h] = values[i]; });
+
+        // Map CSV fields to report fields
+        if (data['Entry_Price']) document.getElementById('trade1EntryPrice').value = data['Entry_Price'];
+        if (data['Exit_Price']) document.getElementById('trade1ExitPrice').value = data['Exit_Price'];
+        if (data['Entry_Time']) document.getElementById('trade1EntryTime').value = data['Entry_Time'];
+        if (data['Exit_Time']) document.getElementById('trade1ExitTime').value = data['Exit_Time'];
+        if (data['HRLR_Level']) document.getElementById('hrlrLevel').value = data['HRLR_Level'];
+        if (data['Tier_1_Target']) document.getElementById('tier1Target').value = data['Tier_1_Target'];
+        if (data['Tier_2_Target']) document.getElementById('tier2Target').value = data['Tier_2_Target'];
+        if (data['Tier_3_Target']) document.getElementById('tier3Target').value = data['Tier_3_Target'];
+        if (data['Entry_Confidence']) document.getElementById('preMarketConfidence').value = data['Entry_Confidence'];
+
+        // Checkboxes
+        document.getElementById('trade1Tier1Hit').checked = data['Tier_1_Hit'] === 'true' || data['Tier_1_Hit'] === 'Yes';
+        document.getElementById('trade1Tier2Hit').checked = data['Tier_2_Hit'] === 'true' || data['Tier_2_Hit'] === 'Yes';
+        document.getElementById('trade1Tier3Hit').checked = data['Tier_3_Hit'] === 'true' || data['Tier_3_Hit'] === 'Yes';
+
+        calculateTrade(1);
+        console.log('📥 CSV imported successfully');
+      };
+      reader.readAsText(file);
+    }
+
+    // Clear report
+    function clearReport() {
+      if (!confirm('Clear all report data?')) return;
+      document.querySelectorAll('input, textarea, select').forEach(el => {
+        if (el.type === 'checkbox') el.checked = false;
+        else el.value = '';
+      });
+      updateDailySummary();
+      document.getElementById('trade1Status').textContent = '—';
+      document.getElementById('trade1Status').className = 'trade-status';
+      document.getElementById('trade2Status').textContent = '—';
+      document.getElementById('trade2Status').className = 'trade-status';
+    }
+
+    // Initialize
+    initializeDate();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,3 @@
+Trade_Date,Day_Of_Week,Climax_Type,Range_Type,Break_Of_Structure,MTF_Alignment,Secondary_Test_Confirmed,Pre_Market_Confidence,HRLR_Level,Tier_1_Target,Tier_2_Target,Tier_3_Target,Trade_1_Entry_Time,Trade_1_Entry_Price,Trade_1_Exit_Time,Trade_1_Exit_Price,Trade_1_Tier1_Hit,Trade_1_Tier2_Hit,Trade_1_Tier3_Hit,Trade_1_PnL_Points,Trade_1_PnL_Dollars,Trade_1_Status,Trade_2_Entry_Time,Trade_2_Entry_Price,Trade_2_Exit_Time,Trade_2_Exit_Price,Trade_2_Tier1_Hit,Trade_2_Tier2_Hit,Trade_2_Tier3_Hit,Trade_2_PnL_Points,Trade_2_PnL_Dollars,Trade_2_Status,Total_Trades,Winning_Trades,Win_Rate,Total_PnL_Points,Total_PnL_Dollars,Tier_Hit_Rate,What_Worked_Well,Areas_For_Improvement,Lessons_Learned,Plan_For_Tomorrow
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
